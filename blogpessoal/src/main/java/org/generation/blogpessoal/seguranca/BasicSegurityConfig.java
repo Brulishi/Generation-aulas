@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -15,23 +15,26 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class BasicSegurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	private UserDetailsServiceImpl userDetailsService; 
+	private UserDetailsService userDetailService; 
 	
 	@Override 
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService);
+		auth.userDetailsService(userDetailService);
+		
+		auth.inMemoryAuthentication()
+		.withUser("root").password(passwordEnconder().encode("root")).authorities("ROLE_ADMIN");
 	}
 	
 	@Bean
-	public PasswordEncoder pawwordEnconder () {
+	public PasswordEncoder passwordEnconder () {
 		return new BCryptPasswordEncoder();
 		}
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		.antMatchers("/usuarios/logar").permitAll()
-		.antMatchers("/usuarios/cadastrar").permitAll()
+		.antMatchers("/usuario/logar").permitAll()
+		.antMatchers("/usuario/cadastrar").permitAll()
 		.anyRequest().authenticated()
 		.and().httpBasic()
 		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -39,5 +42,4 @@ public class BasicSegurityConfig extends WebSecurityConfigurerAdapter {
 		.and().csrf().disable();
 
 	}
-	
 }

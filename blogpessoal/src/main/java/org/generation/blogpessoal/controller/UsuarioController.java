@@ -14,8 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("/usuarios")
+@Api (tags = "Controlador de usuario", description = "Utilitario de usuarios")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UsuarioController {
 
@@ -27,6 +33,12 @@ public class UsuarioController {
 		return usuarioService.Logar(user).map(resp -> ResponseEntity.ok(resp))
 				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
+	
+	@ApiOperation(value = "Salva novo usuario no sistema")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Retorna usuario cadastrado"),
+			@ApiResponse(code = 400, message = "Erro na requisição")
+	})
 
 	@PostMapping("/cadastrar")
 	public ResponseEntity<Usuario> Post(@RequestBody Usuario usuario) {
